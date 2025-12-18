@@ -436,7 +436,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
 
                 // Table with 4 arrival sections - stretch to fill page
                 html += `
-                    <table style="width: 100%; height: ${pageIdx === 0 ? '920px' : '1000px'}; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
+                    <table style="width: 100%; height: 700px; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
                         <thead>
                             <tr>
                                 <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">HAWB</th>
