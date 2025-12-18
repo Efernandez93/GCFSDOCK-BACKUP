@@ -480,3 +480,45 @@ function hasValueChanged(oldVal, newVal) {
     if (old && now && old !== now) return true;
     return false;
 }
+
+/**
+ * AIR CARGO OPERATIONS (STUBS - Tables not yet implemented)
+ * TODO: Add air cargo tables to schema and implement these functions
+ */
+
+export async function saveAirUpload(filename, rowCount) {
+    console.warn('Air cargo tables not yet implemented');
+    return null;
+}
+
+export async function getAllAirUploads() {
+    return [];
+}
+
+export async function deleteAirUpload(uploadId) {
+    return false;
+}
+
+export async function saveAirReportData(uploadId, rows) {
+    return 0;
+}
+
+export async function getAirReportData(uploadId, filter = 'all') {
+    return [];
+}
+
+export async function getAirMasterListData(filter = 'all') {
+    return [];
+}
+
+export async function getAirMasterListMetrics() {
+    return { totalRows: 0, withFrl: 0, withoutFrl: 0 };
+}
+
+export async function updateAirMasterList(uploadId, rows) {
+    return { itemsAdded: 0, itemsUpdated: 0 };
+}
+
+export async function getAirMasterListNewItems() {
+    return { count: 0, data: [] };
+}
