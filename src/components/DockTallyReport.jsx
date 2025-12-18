@@ -476,9 +476,8 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                         <tbody>
                 `;
 
-                // Always render exactly 5 rows for uniform spacing (each HAWB = 2 rows = 10% each)
-                for (let i = 0; i < 5; i++) {
-                    const item = pageItems[i] || {}; // Use empty object if no item exists
+                // Render only actual items (no empty rows)
+                pageItems.forEach(item => {
                     html += `
                         <tr style="height: 10%;">
                             <td style="padding: 3px; border: 1px solid #000000; font-weight: bold; vertical-align: top; font-size: 9px; background-color: #FFFFFF;">
@@ -522,7 +521,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td colspan="5" style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                         </tr>
                     `;
-                }
+                });
 
                 html += `</tbody></table></div>`;
             });
