@@ -24,7 +24,7 @@ export default function MetricsBar({
             isInfo: true,  // Just for display, no filtering
             enabled: false  // Disable clicking - it's informational only
         },
-        // Show FRL metrics for Ocean mode, LOG metrics for Air mode
+        // Show FRL metrics for Ocean mode only (Air mode doesn't need these)
         ...(!isAir ? [
             {
                 key: 'with_frl',
@@ -36,20 +36,9 @@ export default function MetricsBar({
                 label: 'Without FRL',
                 value: metrics.withoutFrl ?? 0
             },
-        ] : [
-            {
-                key: 'with_log',
-                label: 'With LOG',
-                value: metrics.withFrl ?? 0  // Using withFrl field for LOG data
-            },
-            {
-                key: 'without_log',
-                label: 'Without LOG',
-                value: metrics.withoutFrl ?? 0  // Using withoutFrl field for LOG data
-            },
-        ]),
-        // Only show comparison metrics for individual uploads (not Master List)
-        ...(!isMasterList ? [
+        ] : []),
+        // Only show comparison metrics for Ocean individual uploads (not Master List, not Air)
+        ...(!isMasterList && !isAir ? [
             {
                 key: 'new_items',
                 label: 'NEW Items',
@@ -60,18 +49,14 @@ export default function MetricsBar({
                 key: 'updated_items',
                 label: 'Removed',
                 value: metrics.removedItems ?? 0,
-                enabled: true,
-                hidden: isAir // Hide for Air mode since we don't track this yet
+                enabled: true
             },
-            // Only show Newly FRL'd for Ocean mode
-            ...(!isAir ? [
-                {
-                    key: 'new_frl',
-                    label: "Newly FRL'd",
-                    value: metrics.newFrl ?? 0,
-                    enabled: true
-                },
-            ] : []),
+            {
+                key: 'new_frl',
+                label: "Newly FRL'd",
+                value: metrics.newFrl ?? 0,
+                enabled: true
+            },
         ] : []),
     ];
 

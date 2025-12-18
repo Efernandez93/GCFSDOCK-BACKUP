@@ -404,7 +404,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
             const group = groupedData[mawb];
             if (!group) return;
 
-            const itemsPerPage = 6;
+            const itemsPerPage = 5;
             const pages = [];
             for (let i = 0; i < group.items.length; i += itemsPerPage) {
                 pages.push(group.items.slice(i, i + itemsPerPage));
@@ -439,7 +439,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                     <table style="width: 100%; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="width: 11%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">HAWB</th>
+                                <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">HAWB</th>
                                 <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">Dest</th>
                                 <th rowspan="2" style="width: 5%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">
                                     <div>SLAC</div>
