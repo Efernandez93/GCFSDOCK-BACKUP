@@ -316,10 +316,8 @@ export default function Dashboard({ onLogout }) {
     const handleRefreshMasterList = async () => {
         const success = await cleanupOrphanedMasterListItems();
         if (success) {
-            // Reload master list data after cleanup
-            if (isMasterList) {
-                await loadMasterListData();
-            }
+            // Always reload master list data to update count
+            await loadMasterListData();
             showToast('Master List synced successfully', 'success');
         } else {
             showToast('Failed to sync Master List', 'error');
