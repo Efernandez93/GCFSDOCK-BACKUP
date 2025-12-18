@@ -434,9 +434,9 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 `;
                 }
 
-                // Table with 4 arrival sections - optimized height to fit on one page
+                // Table with 4 arrival sections
                 html += `
-                    <table style="width: 100%; height: 620px; border-collapse: collapse; font-size: 8px; border: 1px solid #000000; background-color: #FFFFFF;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8px; border: 1px solid #000000; background-color: #FFFFFF;">
                         <thead>
                             <tr>
                                 <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid #000000; font-weight: bold; vertical-align: middle; background-color: #FFFFFF;">HAWB</th>
@@ -479,7 +479,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 // Render only actual items (no empty rows)
                 pageItems.forEach(item => {
                     html += `
-                        <tr style="height: 10%;">
+                        <tr style="height: 35px;">
                             <td style="padding: 3px; border: 1px solid #000000; font-weight: bold; vertical-align: top; font-size: 9px; background-color: #FFFFFF;">
                                 ${item.hawb || ''}
                             </td>
@@ -511,7 +511,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                             <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                         </tr>
-                        <tr style="height: 10%;">
+                        <tr style="height: 35px;">
                             <td colspan="3" style="border: 1px solid #000000; padding: 2px; vertical-align: top; font-size: 7px; background-color: #FFFFFF;">
                                 <span style="color: #000000;">Dock Notes:</span>
                             </td>
