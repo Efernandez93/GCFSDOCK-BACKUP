@@ -31,7 +31,7 @@ import {
     getAirMasterListData,
     getAirMasterListMetrics,
     getAirMasterListNewItems,
-} from '../lib/localDatabase';
+} from '../lib/database';
 
 export default function Dashboard({ onLogout }) {
     // Mode: 'ocean' or 'air'

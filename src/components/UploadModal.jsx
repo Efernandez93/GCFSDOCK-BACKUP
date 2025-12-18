@@ -8,7 +8,7 @@ import { parseCSV, validateColumns, cleanData, cleanAirData } from '../lib/csvUt
 import {
     saveUpload, saveReportData, updateMasterList,
     saveAirUpload, saveAirReportData, updateAirMasterList
-} from '../lib/localDatabase';
+} from '../lib/database';
 
 export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean' }) {
     const [file, setFile] = useState(null);
