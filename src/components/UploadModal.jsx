@@ -86,18 +86,18 @@ export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean'
             setProgress({ step: 'Saving upload...', detail: `${cleanedData.length} rows` });
 
             // Step 4: Save upload record (mode-aware)
-            const upload = mode === 'air'
+            const uploadId = mode === 'air'
                 ? await saveAirUpload(file.name, cleanedData.length)
                 : await saveUpload(file.name, cleanedData.length);
-            if (!upload) {
+            if (!uploadId) {
                 throw new Error('Failed to save upload record');
             }
 
             // Step 5: Save report data (mode-aware)
             setProgress({ step: 'Saving report data...', detail: '' });
             const rowsInserted = mode === 'air'
-                ? await saveAirReportData(upload.id, cleanedData)
-                : await saveReportData(upload.id, cleanedData);
+                ? await saveAirReportData(uploadId, cleanedData)
+                : await saveReportData(uploadId, cleanedData);
 
             if (!rowsInserted) {
                 throw new Error('Failed to save report data');
@@ -109,7 +109,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean'
 
             if (mode === 'ocean') {
                 setProgress({ step: 'Updating master list...', detail: '' });
-                const result = await updateMasterList(upload.id, cleanedData);
+                const result = await updateMasterList(uploadId, cleanedData);
                 itemsAdded = result.itemsAdded;
                 itemsUpdated = result.itemsUpdated;
             }
@@ -125,7 +125,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean'
                     rowsInserted,
                     itemsAdded,
                     itemsUpdated,
-                    uploadId: upload.id
+                    uploadId: uploadId
                 });
                 handleClose();
             }, 1500);
