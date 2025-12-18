@@ -434,9 +434,9 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 `;
                 }
 
-                // Table with 4 arrival sections
+                // Table with 4 arrival sections - stretch to fill page
                 html += `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
+                    <table style="width: 100%; height: ${pageIdx === 0 ? '920px' : '1000px'}; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
                         <thead>
                             <tr>
                                 <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">HAWB</th>
@@ -480,7 +480,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 for (let i = 0; i < 5; i++) {
                     const item = pageItems[i] || {}; // Use empty object if no item exists
                     html += `
-                        <tr>
+                        <tr style="height: 20%;">
                             <td style="padding: 3px; border: 1px solid black; font-weight: bold; vertical-align: top; font-size: 9px;">
                                 ${item.hawb || ''}
                             </td>
@@ -491,7 +491,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                                 <div style="border-bottom: 1px solid black; padding: 2px; font-weight: bold;">${item.slac || ''}</div>
                                 <div style="padding: 2px; font-size: 7px;">${item.qty || ''}</div>
                             </td>
-                            <td style="border: 1px solid black; height: 60px;"></td>
+                            <td style="border: 1px solid black;"></td>
                             <td style="border: 1px solid black;"></td>
                             <td style="border: 1px solid black;"></td>
                             <td style="border: 1px solid black;"></td>
@@ -512,8 +512,8 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td style="border: 1px solid black;"></td>
                             <td style="border: 1px solid black;"></td>
                         </tr>
-                        <tr>
-                            <td colspan="3" style="height: 45px; border: 1px solid black; padding: 2px; vertical-align: top; font-size: 7px;">
+                        <tr style="height: 20%;">
+                            <td colspan="3" style="border: 1px solid black; padding: 2px; vertical-align: top; font-size: 7px;">
                                 <span style="color: #666;">Dock Notes:</span>
                             </td>
                             <td colspan="5" style="border: 1px solid black;"></td>
