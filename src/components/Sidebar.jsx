@@ -24,7 +24,8 @@ export default function Sidebar({
     onDeleteUpload,
     onRefresh,
     onRefreshMasterList,
-    onLogout
+    onLogout,
+    mode = 'ocean'
 }) {
     const [deleting, setDeleting] = useState(null);
 
@@ -77,36 +78,38 @@ export default function Sidebar({
                     Upload CSV
                 </button>
 
-                {/* Master List */}
-                <div style={{ marginBottom: '16px' }}>
-                    <div
-                        className={`upload-item master-list ${isMasterList ? 'active' : ''}`}
-                        onClick={onSelectMasterList}
-                    >
-                        <div className="upload-date" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Package size={16} />
-                            Master List
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div className="upload-count">{masterListCount} items</div>
-                            <button
-                                className="btn btn-ghost btn-icon"
-                                style={{
-                                    width: '24px',
-                                    height: '24px',
-                                    padding: '4px'
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRefreshMasterList();
-                                }}
-                                title="Sync Master List (remove orphaned items)"
-                            >
-                                <RefreshCw size={14} />
-                            </button>
+                {/* Master List - Only show in Ocean mode */}
+                {mode === 'ocean' && (
+                    <div style={{ marginBottom: '16px' }}>
+                        <div
+                            className={`upload-item master-list ${isMasterList ? 'active' : ''}`}
+                            onClick={onSelectMasterList}
+                        >
+                            <div className="upload-date" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Package size={16} />
+                                Master List
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div className="upload-count">{masterListCount} items</div>
+                                <button
+                                    className="btn btn-ghost btn-icon"
+                                    style={{
+                                        width: '24px',
+                                        height: '24px',
+                                        padding: '4px'
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onRefreshMasterList();
+                                    }}
+                                    title="Sync Master List (remove orphaned items)"
+                                >
+                                    <RefreshCw size={14} />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Upload History Label */}
                 <div style={{

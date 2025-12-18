@@ -353,6 +353,7 @@ export default function Dashboard({ onLogout }) {
                 onRefresh={loadUploads}
                 onRefreshMasterList={handleRefreshMasterList}
                 onLogout={onLogout}
+                mode={mode}
             />
 
             <main className="main-content">

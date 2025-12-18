@@ -863,31 +863,155 @@ function hasValueChanged(oldVal, newVal) {
 }
 
 /**
- * AIR CARGO OPERATIONS (STUBS - Tables not yet implemented)
- * TODO: Add air cargo tables to schema and implement these functions
+ * AIR CARGO OPERATIONS
+ * Air mode works on an upload-to-upload basis (no Master List)
  */
 
 export async function saveAirUpload(filename, rowCount) {
-    console.warn('Air cargo tables not yet implemented');
-    return null;
+    const { data, error } = await supabase
+        .from('air_uploads')
+        .insert([{
+            filename,
+            row_count: rowCount,
+            upload_date: new Date().toISOString()
+        }])
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error saving air upload:', error);
+        return null;
+    }
+    return data.id;
 }
 
 export async function getAllAirUploads() {
-    return [];
+    const { data, error } = await supabase
+        .from('air_uploads')
+        .select('*')
+        .order('upload_date', { ascending: false });
+
+    if (error) {
+        console.error('Error getting air uploads:', error);
+        return [];
+    }
+    return data;
 }
 
 export async function deleteAirUpload(uploadId) {
-    return false;
+    try {
+        // Delete report data (CASCADE will handle this automatically)
+        const { error: reportError } = await supabase
+            .from('air_report_data')
+            .delete()
+            .eq('upload_id', uploadId);
+
+        if (reportError) {
+            console.error('Error deleting air report data:', reportError);
+            return false;
+        }
+
+        // Delete the upload record
+        const { error: uploadError } = await supabase
+            .from('air_uploads')
+            .delete()
+            .eq('id', uploadId);
+
+        if (uploadError) {
+            console.error('Error deleting air upload:', uploadError);
+            return false;
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Error in deleteAirUpload:', err);
+        return false;
+    }
 }
 
 export async function saveAirReportData(uploadId, rows) {
-    return 0;
+    const dataToInsert = rows.map(row => ({
+        upload_id: uploadId,
+        mawb: row['MAWB'] || null,
+        hawb: row['HAWB'] || null,
+        consignee: row['Consignee'] || null,
+        carrier: row['Carrier'] || null,
+        flight_number: row['FLIGHT NUMBER'] || null,
+        freight_location: row['FREIGHT LOCATION'] || null,
+        origin: row['ORIGIN'] || null,
+        destination: row['DESTINATION'] || null,
+        file_number: row['File Number'] || null,
+        qty: row['QTY'] || null,
+        shipment_type: row['Shipment Type'] || null,
+        slac: row['SLAC'] || null,
+        weight: row['WEIGHT'] || null,
+        eta: row['ETA'] || null,
+        eta_time: row['ETA TIME'] || null,
+        log: row['LOG'] || null,
+        flt_date: row['Flt Date'] || null,
+    }));
+
+    // Insert in batches of 1000
+    const batchSize = 1000;
+    for (let i = 0; i < dataToInsert.length; i += batchSize) {
+        const batch = dataToInsert.slice(i, i + batchSize);
+        const { error } = await supabase
+            .from('air_report_data')
+            .insert(batch);
+
+        if (error) {
+            console.error('Error saving air report data:', error);
+            return null;
+        }
+    }
+
+    return dataToInsert.length;
 }
 
 export async function getAirReportData(uploadId, filter = 'all') {
-    return [];
+    // Fetch data in batches to avoid any row limits
+    const BATCH_SIZE = 1000;
+    let allData = [];
+    let start = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+        let query = supabase
+            .from('air_report_data')
+            .select('*')
+            .eq('upload_id', uploadId)
+            .order('id', { ascending: true })
+            .range(start, start + BATCH_SIZE - 1);
+
+        if (filter === 'with_log') {
+            query = query.not('log', 'is', null).neq('log', '');
+        } else if (filter === 'without_log') {
+            query = query.or('log.is.null,log.eq.');
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error getting air report data:', error);
+            break;
+        }
+
+        if (!data || data.length === 0) {
+            hasMore = false;
+        } else {
+            allData = allData.concat(data);
+            if (data.length < BATCH_SIZE) {
+                hasMore = false;
+            } else {
+                start += BATCH_SIZE;
+            }
+        }
+    }
+
+    return allData;
 }
 
+// Air mode doesn't have a Master List - these functions are not used
 export async function getAirMasterListData(filter = 'all') {
     return [];
 }
