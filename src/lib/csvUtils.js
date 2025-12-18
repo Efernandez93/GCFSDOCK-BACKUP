@@ -152,11 +152,17 @@ function normalizeHB(value) {
 
     const strValue = String(value).trim();
 
+    // If the value is literally "Infinity" or "-Infinity", return empty string
+    // This happens when Excel converts very large numbers or improperly formatted data
+    if (strValue === 'Infinity' || strValue === '-Infinity' || strValue.toLowerCase() === 'infinity') {
+        return '';
+    }
+
     // Check if it's scientific notation (e.g., 6.17E+08 or 6.17e+08)
     if (/^-?\d+\.?\d*[eE][+-]?\d+$/.test(strValue)) {
         try {
             const num = parseFloat(strValue);
-            if (!isNaN(num)) {
+            if (!isNaN(num) && isFinite(num)) {
                 return String(Math.floor(num));
             }
         } catch {
