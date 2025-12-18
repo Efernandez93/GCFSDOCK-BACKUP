@@ -414,7 +414,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 const isPageBreak = (mawbIdx > 0 && pageIdx === 0) || pageIdx > 0;
                 const pageNum = pageIdx + 1;
 
-                html += `<div class="${isPageBreak ? 'page-break' : ''}" style="color: black; font-family: Arial, sans-serif; font-size: 10px; background-color: white; padding: 5px;">`;
+                html += `<div class="${isPageBreak ? 'page-break' : ''}" style="page-break-inside: avoid; color: #000000; font-family: Arial, sans-serif; font-size: 10px; background-color: #FFFFFF; padding: 5px;">`;
 
                 // Header - Only on first page of MAWB
                 if (pageIdx === 0) {
@@ -436,41 +436,41 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
 
                 // Table with 4 arrival sections - stretch to fill page
                 html += `
-                    <table style="width: 100%; height: 700px; border-collapse: collapse; font-size: 8px; border: 1px solid black;">
+                    <table style="width: 100%; height: 700px; border-collapse: collapse; font-size: 8px; border: 1px solid #000000; background-color: #FFFFFF;">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">HAWB</th>
-                                <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">Dest</th>
-                                <th rowspan="2" style="width: 5%; padding: 2px; border: 1px solid black; font-weight: bold; vertical-align: middle;">
+                                <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid #000000; font-weight: bold; vertical-align: middle; background-color: #FFFFFF;">HAWB</th>
+                                <th rowspan="2" style="width: 7%; padding: 2px; border: 1px solid #000000; font-weight: bold; vertical-align: middle; background-color: #FFFFFF;">Dest</th>
+                                <th rowspan="2" style="width: 5%; padding: 2px; border: 1px solid #000000; font-weight: bold; vertical-align: middle; background-color: #FFFFFF;">
                                     <div>SLAC</div>
                                     <div style="font-size: 7px; font-weight: normal;">Total</div>
                                 </th>
-                                <th colspan="5" style="padding: 2px; border: 1px solid black; font-weight: bold; text-align: center;">Arrival 1<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
-                                <th colspan="5" style="padding: 2px; border: 1px solid black; font-weight: bold; text-align: center;">Arrival 2<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
-                                <th colspan="5" style="padding: 2px; border: 1px solid black; font-weight: bold; text-align: center;">Arrival 3<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
-                                <th colspan="5" style="padding: 2px; border: 1px solid black; font-weight: bold; text-align: center;">Arrival 4<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
+                                <th colspan="5" style="padding: 2px; border: 1px solid #000000; font-weight: bold; text-align: center; background-color: #FFFFFF;">Arrival 1<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
+                                <th colspan="5" style="padding: 2px; border: 1px solid #000000; font-weight: bold; text-align: center; background-color: #FFFFFF;">Arrival 2<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
+                                <th colspan="5" style="padding: 2px; border: 1px solid #000000; font-weight: bold; text-align: center; background-color: #FFFFFF;">Arrival 3<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
+                                <th colspan="5" style="padding: 2px; border: 1px solid #000000; font-weight: bold; text-align: center; background-color: #FFFFFF;">Arrival 4<div style="font-size: 6px; font-weight: normal;">Supv</div></th>
                             </tr>
                             <tr>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">PCS</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">LOC</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">TIME</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">CRW</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">SUB</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">PCS</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">LOC</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">TIME</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">CRW</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">SUB</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">PCS</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">LOC</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">TIME</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">CRW</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">SUB</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">PCS</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">LOC</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">TIME</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">CRW</th>
-                                <th style="width: 3%; padding: 1px; border: 1px solid black; font-size: 6px;">SUB</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">PCS</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">LOC</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">TIME</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">CRW</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">SUB</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">PCS</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">LOC</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">TIME</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">CRW</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">SUB</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">PCS</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">LOC</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">TIME</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">CRW</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">SUB</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">PCS</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">LOC</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">TIME</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">CRW</th>
+                                <th style="width: 3%; padding: 1px; border: 1px solid #000000; font-size: 6px; background-color: #FFFFFF;">SUB</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -481,45 +481,45 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                     const item = pageItems[i] || {}; // Use empty object if no item exists
                     html += `
                         <tr style="height: 10%;">
-                            <td style="padding: 3px; border: 1px solid black; font-weight: bold; vertical-align: top; font-size: 9px;">
+                            <td style="padding: 3px; border: 1px solid #000000; font-weight: bold; vertical-align: top; font-size: 9px; background-color: #FFFFFF;">
                                 ${item.hawb || ''}
                             </td>
-                            <td style="padding: 3px; border: 1px solid black; vertical-align: top; font-size: 7px;">
+                            <td style="padding: 3px; border: 1px solid #000000; vertical-align: top; font-size: 7px; background-color: #FFFFFF;">
                                 ${item.destination || ''}
                             </td>
-                            <td style="padding: 0; border: 1px solid black; text-align: center; vertical-align: top;">
-                                <div style="border-bottom: 1px solid black; padding: 2px; font-weight: bold;">${item.slac || ''}</div>
+                            <td style="padding: 0; border: 1px solid #000000; text-align: center; vertical-align: top; background-color: #FFFFFF;">
+                                <div style="border-bottom: 1px solid #000000; padding: 2px; font-weight: bold;">${item.slac || ''}</div>
                                 <div style="padding: 2px; font-size: 7px;">${item.qty || ''}</div>
                             </td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
-                            <td style="border: 1px solid black;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                         </tr>
                         <tr style="height: 10%;">
-                            <td colspan="3" style="border: 1px solid black; padding: 2px; vertical-align: top; font-size: 7px;">
-                                <span style="color: #666;">Dock Notes:</span>
+                            <td colspan="3" style="border: 1px solid #000000; padding: 2px; vertical-align: top; font-size: 7px; background-color: #FFFFFF;">
+                                <span style="color: #000000;">Dock Notes:</span>
                             </td>
-                            <td colspan="5" style="border: 1px solid black;"></td>
-                            <td colspan="5" style="border: 1px solid black;"></td>
-                            <td colspan="5" style="border: 1px solid black;"></td>
-                            <td colspan="5" style="border: 1px solid black;"></td>
+                            <td colspan="5" style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td colspan="5" style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td colspan="5" style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
+                            <td colspan="5" style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                         </tr>
                     `;
                 }
