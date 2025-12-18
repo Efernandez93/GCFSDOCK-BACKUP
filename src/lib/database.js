@@ -150,7 +150,8 @@ export async function getReportData(uploadId, filter = 'all') {
         .from('report_data')
         .select('*')
         .eq('upload_id', uploadId)
-        .order('id', { ascending: true });
+        .order('id', { ascending: true })
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (filter === 'with_frl') {
         query = query.not('frl', 'is', null).neq('frl', '');
@@ -275,7 +276,8 @@ export async function getMasterListData(filter = 'all') {
     let query = supabase
         .from('master_list')
         .select('*')
-        .order('id', { ascending: true });
+        .order('id', { ascending: true })
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (filter === 'with_frl') {
         query = query.not('frl', 'is', null).neq('frl', '');
@@ -293,7 +295,10 @@ export async function getMasterListData(filter = 'all') {
 }
 
 export async function getMasterListMetrics() {
-    const { data: allData } = await supabase.from('master_list').select('frl');
+    const { data: allData } = await supabase
+        .from('master_list')
+        .select('frl')
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (!allData) return { totalRows: 0, withFrl: 0, withoutFrl: 0 };
 
