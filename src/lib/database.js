@@ -295,18 +295,23 @@ export async function getMasterListData(filter = 'all') {
 }
 
 export async function getMasterListMetrics() {
+    // Get total count using count parameter
+    const { count: totalRows } = await supabase
+        .from('master_list')
+        .select('*', { count: 'exact', head: true });
+
+    // Get all FRL values to calculate with/without FRL
     const { data: allData } = await supabase
         .from('master_list')
         .select('frl')
         .range(0, 999999); // Remove default 1000 row limit
 
-    if (!allData) return { totalRows: 0, withFrl: 0, withoutFrl: 0 };
+    if (!allData) return { totalRows: totalRows || 0, withFrl: 0, withoutFrl: 0 };
 
-    const totalRows = allData.length;
     const withFrl = allData.filter(r => r.frl && r.frl.trim() !== '').length;
-    const withoutFrl = totalRows - withFrl;
+    const withoutFrl = (totalRows || 0) - withFrl;
 
-    return { totalRows, withFrl, withoutFrl };
+    return { totalRows: totalRows || 0, withFrl, withoutFrl };
 }
 
 export async function getLatestUploadId() {
@@ -327,7 +332,8 @@ export async function getMasterListNewItems() {
     const { data, error } = await supabase
         .from('master_list')
         .select('*')
-        .eq('first_seen_upload_id', latestUploadId);
+        .eq('first_seen_upload_id', latestUploadId)
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (error) {
         console.error('Error getting new items:', error);
@@ -345,7 +351,8 @@ export async function getMasterListUpdatedItems() {
         .from('master_list')
         .select('*')
         .eq('last_updated_upload_id', latestUploadId)
-        .not('last_update_reason', 'is', null);
+        .not('last_update_reason', 'is', null)
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (error) {
         console.error('Error getting updated items:', error);
@@ -363,7 +370,8 @@ export async function getMasterListNewFrl() {
         .from('master_list')
         .select('*')
         .eq('last_updated_upload_id', latestUploadId)
-        .ilike('last_update_reason', '%FRL%');
+        .ilike('last_update_reason', '%FRL%')
+        .range(0, 999999); // Remove default 1000 row limit
 
     if (error) {
         console.error('Error getting new FRL items:', error);
@@ -738,8 +746,8 @@ export async function getRemovedItemsData(currentUploadId) {
 
 export async function getDataGroupedByMBL(uploadId = null) {
     let query = uploadId
-        ? supabase.from('report_data').select('*').eq('upload_id', uploadId)
-        : supabase.from('master_list').select('*');
+        ? supabase.from('report_data').select('*').eq('upload_id', uploadId).range(0, 999999)
+        : supabase.from('master_list').select('*').range(0, 999999);
 
     const { data, error } = await query;
 
