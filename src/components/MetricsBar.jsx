@@ -36,27 +36,30 @@ export default function MetricsBar({
                 value: metrics.withoutFrl ?? 0
             },
         ] : []),
-        {
-            key: 'new_items',
-            label: isMasterList ? 'NEW Items' : 'NEW Items',
-            value: metrics.newItems ?? 0,
-            enabled: true
-        },
-        {
-            key: 'updated_items',
-            label: isMasterList ? 'Updated' : 'Removed',
-            value: isMasterList ? (metrics.updatedItems ?? 0) : (metrics.removedItems ?? 0),
-            enabled: true,
-            hidden: isAir // Hide for Air mode since we don't track this yet
-        },
-        // Only show Newly FRL'd for Ocean mode
-        ...(!isAir ? [
+        // Only show comparison metrics for individual uploads (not Master List)
+        ...(!isMasterList ? [
             {
-                key: 'new_frl',
-                label: "Newly FRL'd",
-                value: metrics.newFrl ?? 0,
+                key: 'new_items',
+                label: 'NEW Items',
+                value: metrics.newItems ?? 0,
                 enabled: true
             },
+            {
+                key: 'updated_items',
+                label: 'Removed',
+                value: metrics.removedItems ?? 0,
+                enabled: true,
+                hidden: isAir // Hide for Air mode since we don't track this yet
+            },
+            // Only show Newly FRL'd for Ocean mode
+            ...(!isAir ? [
+                {
+                    key: 'new_frl',
+                    label: "Newly FRL'd",
+                    value: metrics.newFrl ?? 0,
+                    enabled: true
+                },
+            ] : []),
         ] : []),
     ];
 
