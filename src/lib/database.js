@@ -340,6 +340,32 @@ export async function getMasterListNewFrl() {
 }
 
 /**
+ * Normalize FRL value for comparison (handles both dates and Excel serial numbers)
+ */
+function normalizeFrlForComparison(frlValue) {
+    if (!frlValue || frlValue.trim() === '') return '';
+
+    const trimmed = frlValue.trim();
+
+    // If it's already a date (contains /), return as-is
+    if (trimmed.includes('/')) return trimmed;
+
+    // If it's an Excel serial number, convert it
+    const num = parseFloat(trimmed);
+    if (!isNaN(num) && num > 40000 && num < 60000) {
+        // Likely an Excel date serial (40000 ≈ 2009, 60000 ≈ 2064)
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + num * 24 * 60 * 60 * 1000);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${month}/${day}/${year}`;
+    }
+
+    return trimmed;
+}
+
+/**
  * Detect newly FRL'd items for a specific upload (compared to previous upload)
  */
 export async function detectNewlyFrld(currentUploadId) {
@@ -380,11 +406,12 @@ export async function detectNewlyFrld(currentUploadId) {
         .select('hb, frl')
         .eq('upload_id', prevUploadId);
 
-    // Create a map of HB -> FRL for previous upload
+    // Create a map of HB -> normalized FRL for previous upload
     const prevFrlMap = new Map();
     if (prevData) {
         prevData.forEach(item => {
-            prevFrlMap.set(item.hb, item.frl || '');
+            const normalizedFrl = normalizeFrlForComparison(item.frl || '');
+            prevFrlMap.set(item.hb, normalizedFrl);
         });
     }
 
@@ -393,11 +420,98 @@ export async function detectNewlyFrld(currentUploadId) {
     // 2. Existed in previous without FRL, but have FRL now
     const newlyFrld = currentWithFrl.filter(item => {
         const prevFrl = prevFrlMap.get(item.hb);
-        // Item either didn't exist before OR existed without FRL
-        return !prevFrl || prevFrl.trim() === '';
+        const currentFrl = normalizeFrlForComparison(item.frl);
+
+        // Item either didn't exist before OR existed without FRL OR FRL changed from empty
+        if (!prevFrl || prevFrl === '') {
+            // Previous had no FRL, current has FRL
+            return currentFrl !== '';
+        }
+
+        // Both have FRL - not newly FRL'd
+        return false;
     });
 
     return newlyFrld.length;
+}
+
+/**
+ * Get the actual data for newly FRL'd items
+ */
+export async function getNewlyFrldData(currentUploadId) {
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return [];
+
+    // Get previous upload (by date, not ID)
+    const { data: uploads } = await supabase
+        .from('uploads')
+        .select('id')
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
+        .limit(1);
+
+    if (!uploads || uploads.length === 0) return [];
+
+    const prevUploadId = uploads[0].id;
+
+    // Get HBs from current upload that have FRL
+    const { data: currentWithFrl } = await supabase
+        .from('report_data')
+        .select('hb, frl')
+        .eq('upload_id', currentUploadId)
+        .not('frl', 'is', null)
+        .neq('frl', '');
+
+    if (!currentWithFrl || currentWithFrl.length === 0) return [];
+
+    // Get HBs from previous upload
+    const { data: prevData } = await supabase
+        .from('report_data')
+        .select('hb, frl')
+        .eq('upload_id', prevUploadId);
+
+    // Create a map of HB -> normalized FRL for previous upload
+    const prevFrlMap = new Map();
+    if (prevData) {
+        prevData.forEach(item => {
+            const normalizedFrl = normalizeFrlForComparison(item.frl || '');
+            prevFrlMap.set(item.hb, normalizedFrl);
+        });
+    }
+
+    // Filter to get HBs that are newly FRL'd
+    const newlyFrldHbs = currentWithFrl
+        .filter(item => {
+            const prevFrl = prevFrlMap.get(item.hb);
+            const currentFrl = normalizeFrlForComparison(item.frl);
+
+            // Item either didn't exist before OR existed without FRL OR FRL changed from empty
+            if (!prevFrl || prevFrl === '') {
+                // Previous had no FRL, current has FRL
+                return currentFrl !== '';
+            }
+
+            // Both have FRL - not newly FRL'd
+            return false;
+        })
+        .map(item => item.hb);
+
+    if (newlyFrldHbs.length === 0) return [];
+
+    // Fetch full data for these HBs
+    const { data: fullData } = await supabase
+        .from('report_data')
+        .select('*')
+        .eq('upload_id', currentUploadId)
+        .in('hb', newlyFrldHbs);
+
+    return fullData || [];
 }
 
 /**

@@ -22,6 +22,7 @@ import {
     getMasterListNewFrl,
     getNewItemsData,
     getRemovedItemsData,
+    getNewlyFrldData,
     detectNewItems,
     detectRemovedItems,
     detectNewlyFrld,
@@ -210,6 +211,9 @@ export default function Dashboard({ onLogout }) {
                         break;
                     case 'updated_items':
                         loadedData = await getRemovedItemsData(uploadId);
+                        break;
+                    case 'new_frl':
+                        loadedData = await getNewlyFrldData(uploadId);
                         break;
                     default:
                         loadedData = await getReportData(uploadId, activeFilter);
