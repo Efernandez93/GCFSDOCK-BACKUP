@@ -63,6 +63,36 @@ export function validateColumns(headers, mode = 'ocean') {
 }
 
 /**
+ * Convert Excel serial date to readable date string
+ * Excel stores dates as numbers (days since 1900-01-01)
+ * @param {string|number} value - Excel serial date or date string
+ * @returns {string} Formatted date (MM/DD/YYYY) or original value
+ */
+export function convertExcelDate(value) {
+    if (!value || value === '') return '';
+
+    // If it's already a date string (contains /), return as-is
+    if (typeof value === 'string' && value.includes('/')) {
+        return value;
+    }
+
+    // Try to parse as Excel serial number
+    const num = parseFloat(value);
+    if (isNaN(num)) return value;
+
+    // Excel date serial starts from 1900-01-01 (but Excel incorrectly treats 1900 as leap year)
+    const excelEpoch = new Date(1899, 11, 30); // December 30, 1899
+    const date = new Date(excelEpoch.getTime() + num * 24 * 60 * 60 * 1000);
+
+    // Format as MM/DD/YYYY
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${month}/${day}/${year}`;
+}
+
+/**
  * Clean and normalize CSV data for Ocean
  * @param {Array} data - Raw CSV data rows
  * @returns {Array} Cleaned data rows
@@ -83,6 +113,11 @@ export function cleanData(data) {
                 // Normalize HB column (handle scientific notation)
                 if (key === 'HB') {
                     value = normalizeHB(value);
+                }
+
+                // Convert Excel date columns to readable dates
+                if (key === 'FRL' || key === 'TDF') {
+                    value = convertExcelDate(value);
                 }
 
                 cleaned[key] = value;

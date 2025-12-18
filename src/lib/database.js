@@ -340,6 +340,67 @@ export async function getMasterListNewFrl() {
 }
 
 /**
+ * Detect newly FRL'd items for a specific upload (compared to previous upload)
+ */
+export async function detectNewlyFrld(currentUploadId) {
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return 0;
+
+    // Get previous upload (by date, not ID)
+    const { data: uploads } = await supabase
+        .from('uploads')
+        .select('id')
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
+        .limit(1);
+
+    if (!uploads || uploads.length === 0) return 0;
+
+    const prevUploadId = uploads[0].id;
+
+    // Get HBs from current upload that have FRL
+    const { data: currentWithFrl } = await supabase
+        .from('report_data')
+        .select('hb, frl')
+        .eq('upload_id', currentUploadId)
+        .not('frl', 'is', null)
+        .neq('frl', '');
+
+    if (!currentWithFrl || currentWithFrl.length === 0) return 0;
+
+    // Get HBs from previous upload
+    const { data: prevData } = await supabase
+        .from('report_data')
+        .select('hb, frl')
+        .eq('upload_id', prevUploadId);
+
+    // Create a map of HB -> FRL for previous upload
+    const prevFrlMap = new Map();
+    if (prevData) {
+        prevData.forEach(item => {
+            prevFrlMap.set(item.hb, item.frl || '');
+        });
+    }
+
+    // Count items that either:
+    // 1. Didn't exist in previous upload but have FRL now, OR
+    // 2. Existed in previous without FRL, but have FRL now
+    const newlyFrld = currentWithFrl.filter(item => {
+        const prevFrl = prevFrlMap.get(item.hb);
+        // Item either didn't exist before OR existed without FRL
+        return !prevFrl || prevFrl.trim() === '';
+    });
+
+    return newlyFrld.length;
+}
+
+/**
  * COMPARISON OPERATIONS (Between uploads)
  */
 

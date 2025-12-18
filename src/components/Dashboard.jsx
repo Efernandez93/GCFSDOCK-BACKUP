@@ -24,6 +24,7 @@ import {
     getRemovedItemsData,
     detectNewItems,
     detectRemovedItems,
+    detectNewlyFrld,
     // Air functions
     getAllAirUploads,
     deleteAirUpload,
@@ -189,6 +190,7 @@ export default function Dashboard({ onLogout }) {
                 const withFrl = reportData.filter(r => r.frl && r.frl.trim() !== '').length;
                 const newItemsCount = await detectNewItems(uploadId);
                 const removedItemsCount = await detectRemovedItems(uploadId);
+                const newlyFrldCount = await detectNewlyFrld(uploadId);
 
                 setMetrics({
                     totalRows: reportData.length,
@@ -198,7 +200,7 @@ export default function Dashboard({ onLogout }) {
                     newItems: newItemsCount,
                     removedItems: removedItemsCount,
                     updatedItems: 0,
-                    newFrl: 0,
+                    newFrl: newlyFrldCount,
                 });
 
                 let loadedData = [];
