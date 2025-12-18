@@ -21,7 +21,8 @@ export default function MetricsBar({
             key: 'unique_mbl',
             label: isAir ? 'Unique MAWBs' : 'Unique MBLs',
             value: metrics.uniqueMbls ?? 0,
-            isInfo: true  // Just for display, no filtering
+            isInfo: true,  // Just for display, no filtering
+            enabled: false  // Disable clicking - it's informational only
         },
         // Only show FRL metrics for Ocean mode
         ...(!isAir ? [

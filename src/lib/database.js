@@ -340,15 +340,37 @@ export async function getMasterListMetrics() {
         .from('master_list')
         .select('*', { count: 'exact', head: true });
 
-    // Get all FRL values to calculate with/without FRL
-    const { data: allData } = await supabase
-        .from('master_list')
-        .select('frl')
-        .range(0, 999999); // Remove default 1000 row limit
+    // Fetch all FRL values in batches to calculate with/without FRL
+    const BATCH_SIZE = 1000;
+    let allFrlData = [];
+    let start = 0;
+    let hasMore = true;
 
-    if (!allData) return { totalRows: totalRows || 0, withFrl: 0, withoutFrl: 0 };
+    while (hasMore) {
+        const { data, error } = await supabase
+            .from('master_list')
+            .select('frl')
+            .order('id', { ascending: true })
+            .range(start, start + BATCH_SIZE - 1);
 
-    const withFrl = allData.filter(r => r.frl && r.frl.trim() !== '').length;
+        if (error) {
+            console.error('Error fetching FRL data:', error);
+            break;
+        }
+
+        if (!data || data.length === 0) {
+            hasMore = false;
+        } else {
+            allFrlData = allFrlData.concat(data);
+            if (data.length < BATCH_SIZE) {
+                hasMore = false;
+            } else {
+                start += BATCH_SIZE;
+            }
+        }
+    }
+
+    const withFrl = allFrlData.filter(r => r.frl && r.frl.trim() !== '').length;
     const withoutFrl = (totalRows || 0) - withFrl;
 
     return { totalRows: totalRows || 0, withFrl, withoutFrl };
