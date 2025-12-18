@@ -400,7 +400,7 @@ export async function detectNewlyFrld(currentUploadId) {
 
     if (!currentWithFrl || currentWithFrl.length === 0) return 0;
 
-    // Get HBs from previous upload
+    // Get ALL HBs from previous upload (including those without FRL)
     const { data: prevData } = await supabase
         .from('report_data')
         .select('hb, frl')
@@ -415,20 +415,26 @@ export async function detectNewlyFrld(currentUploadId) {
         });
     }
 
-    // Count items that either:
-    // 1. Didn't exist in previous upload but have FRL now, OR
-    // 2. Existed in previous without FRL, but have FRL now
+    // Count items that:
+    // - Existed in previous upload (prevFrlMap.has(item.hb))
+    // - Did NOT have FRL in previous upload (prevFrl === '')
+    // - NOW have FRL in current upload (currentFrl !== '')
     const newlyFrld = currentWithFrl.filter(item => {
+        // Check if item existed in previous upload
+        if (!prevFrlMap.has(item.hb)) {
+            // Item didn't exist before - NOT newly FRL'd, just new
+            return false;
+        }
+
         const prevFrl = prevFrlMap.get(item.hb);
         const currentFrl = normalizeFrlForComparison(item.frl);
 
-        // Item either didn't exist before OR existed without FRL OR FRL changed from empty
-        if (!prevFrl || prevFrl === '') {
-            // Previous had no FRL, current has FRL
-            return currentFrl !== '';
+        // Item existed before without FRL, now has FRL
+        if (prevFrl === '' && currentFrl !== '') {
+            return true;
         }
 
-        // Both have FRL - not newly FRL'd
+        // Both have FRL, or current doesn't have FRL - not newly FRL'd
         return false;
     });
 
@@ -470,7 +476,7 @@ export async function getNewlyFrldData(currentUploadId) {
 
     if (!currentWithFrl || currentWithFrl.length === 0) return [];
 
-    // Get HBs from previous upload
+    // Get ALL HBs from previous upload (including those without FRL)
     const { data: prevData } = await supabase
         .from('report_data')
         .select('hb, frl')
@@ -488,16 +494,21 @@ export async function getNewlyFrldData(currentUploadId) {
     // Filter to get HBs that are newly FRL'd
     const newlyFrldHbs = currentWithFrl
         .filter(item => {
+            // Check if item existed in previous upload
+            if (!prevFrlMap.has(item.hb)) {
+                // Item didn't exist before - NOT newly FRL'd, just new
+                return false;
+            }
+
             const prevFrl = prevFrlMap.get(item.hb);
             const currentFrl = normalizeFrlForComparison(item.frl);
 
-            // Item either didn't exist before OR existed without FRL OR FRL changed from empty
-            if (!prevFrl || prevFrl === '') {
-                // Previous had no FRL, current has FRL
-                return currentFrl !== '';
+            // Item existed before without FRL, now has FRL
+            if (prevFrl === '' && currentFrl !== '') {
+                return true;
             }
 
-            // Both have FRL - not newly FRL'd
+            // Both have FRL, or current doesn't have FRL - not newly FRL'd
             return false;
         })
         .map(item => item.hb);
