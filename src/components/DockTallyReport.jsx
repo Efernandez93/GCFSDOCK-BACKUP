@@ -477,11 +477,13 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 `;
 
                 // Calculate dynamic row height based on number of items on this page
-                // Total available space ~700px, divided evenly among items
+                // Total available space reduced to fit on one page without overflow
                 // Each item needs 2 rows (data + notes), so divide by (pageItems.length * 2)
-                const totalAvailableHeight = 700;
+                // Max row height capped at 80px to prevent excessive stretching with few HAWBs
+                const totalAvailableHeight = 550; // Reduced from 700 to prevent page overflow
                 const rowsNeeded = pageItems.length * 2; // 2 rows per HAWB
-                const dynamicRowHeight = Math.floor(totalAvailableHeight / rowsNeeded);
+                const calculatedHeight = Math.floor(totalAvailableHeight / rowsNeeded);
+                const dynamicRowHeight = Math.min(calculatedHeight, 80); // Cap at 80px max
 
                 // Render only actual items (no empty rows)
                 pageItems.forEach(item => {
