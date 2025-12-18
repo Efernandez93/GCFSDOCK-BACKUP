@@ -121,16 +121,34 @@ export async function updateMasterList(uploadId, rows) {
     let itemsAdded = 0;
     let itemsUpdated = 0;
 
+    // Extract all HBs from the upload
+    const hbsToCheck = rows.map(row => normalizeHB(row['HB'])).filter(hb => hb);
+
+    if (hbsToCheck.length === 0) {
+        return { itemsAdded: 0, itemsUpdated: 0 };
+    }
+
+    // Fetch all existing master list items in ONE query
+    const { data: existingItems } = await supabase
+        .from('master_list')
+        .select('id, hb, frl, tdf, vbond')
+        .in('hb', hbsToCheck);
+
+    // Create a map for quick lookup
+    const existingMap = new Map();
+    if (existingItems) {
+        existingItems.forEach(item => {
+            existingMap.set(item.hb, item);
+        });
+    }
+
+    // Separate items into new vs updates
+    const itemsToInsert = [];
+    const itemsToUpdate = [];
+
     for (const row of rows) {
         const hb = normalizeHB(row['HB']);
         if (!hb) continue;
-
-        // Check if item exists in master list
-        const { data: existing } = await supabase
-            .from('master_list')
-            .select('id, frl, tdf, vbond')
-            .eq('hb', hb)
-            .single();
 
         const itemData = {
             container: row['CONTAINER'] || null,
@@ -154,6 +172,8 @@ export async function updateMasterList(uploadId, rows) {
             updated_at: new Date().toISOString(),
         };
 
+        const existing = existingMap.get(hb);
+
         if (existing) {
             // Determine update reason
             let updateReason = [];
@@ -162,17 +182,36 @@ export async function updateMasterList(uploadId, rows) {
             if (hasValueChanged(existing.vbond, row['VBOND#'])) updateReason.push('VBOND');
 
             if (updateReason.length > 0) {
+                itemData.id = existing.id;
                 itemData.last_update_reason = updateReason.join(', ');
-                await supabase.from('master_list').update(itemData).eq('id', existing.id);
-                itemsUpdated++;
+                itemsToUpdate.push(itemData);
             }
         } else {
             // New item
             itemData.first_seen_upload_id = uploadId;
             itemData.created_at = new Date().toISOString();
-            await supabase.from('master_list').insert(itemData);
-            itemsAdded++;
+            itemsToInsert.push(itemData);
         }
+    }
+
+    // Batch insert new items (Supabase supports up to 1000 per batch)
+    if (itemsToInsert.length > 0) {
+        const batchSize = 1000;
+        for (let i = 0; i < itemsToInsert.length; i += batchSize) {
+            const batch = itemsToInsert.slice(i, i + batchSize);
+            await supabase.from('master_list').insert(batch);
+        }
+        itemsAdded = itemsToInsert.length;
+    }
+
+    // Batch update existing items using upsert
+    if (itemsToUpdate.length > 0) {
+        const batchSize = 1000;
+        for (let i = 0; i < itemsToUpdate.length; i += batchSize) {
+            const batch = itemsToUpdate.slice(i, i + batchSize);
+            await supabase.from('master_list').upsert(batch);
+        }
+        itemsUpdated = itemsToUpdate.length;
     }
 
     return { itemsAdded, itemsUpdated };
