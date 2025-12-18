@@ -146,26 +146,46 @@ export async function saveReportData(uploadId, rows) {
 }
 
 export async function getReportData(uploadId, filter = 'all') {
-    let query = supabase
-        .from('report_data')
-        .select('*')
-        .eq('upload_id', uploadId)
-        .order('id', { ascending: true })
-        .range(0, 999999); // Remove default 1000 row limit
+    // Fetch data in batches to avoid any row limits
+    const BATCH_SIZE = 1000;
+    let allData = [];
+    let start = 0;
+    let hasMore = true;
 
-    if (filter === 'with_frl') {
-        query = query.not('frl', 'is', null).neq('frl', '');
-    } else if (filter === 'without_frl') {
-        query = query.or('frl.is.null,frl.eq.');
+    while (hasMore) {
+        let query = supabase
+            .from('report_data')
+            .select('*')
+            .eq('upload_id', uploadId)
+            .order('id', { ascending: true })
+            .range(start, start + BATCH_SIZE - 1);
+
+        if (filter === 'with_frl') {
+            query = query.not('frl', 'is', null).neq('frl', '');
+        } else if (filter === 'without_frl') {
+            query = query.or('frl.is.null,frl.eq.');
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error getting report data:', error);
+            break;
+        }
+
+        if (!data || data.length === 0) {
+            hasMore = false;
+        } else {
+            allData = allData.concat(data);
+            if (data.length < BATCH_SIZE) {
+                hasMore = false;
+            } else {
+                start += BATCH_SIZE;
+            }
+        }
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-        console.error('Error getting report data:', error);
-        return [];
-    }
-    return data;
+    return allData;
 }
 
 /**
@@ -273,25 +293,45 @@ export async function updateMasterList(uploadId, rows) {
 }
 
 export async function getMasterListData(filter = 'all') {
-    let query = supabase
-        .from('master_list')
-        .select('*')
-        .order('id', { ascending: true })
-        .range(0, 999999); // Remove default 1000 row limit
+    // Fetch data in batches to avoid any row limits
+    const BATCH_SIZE = 1000;
+    let allData = [];
+    let start = 0;
+    let hasMore = true;
 
-    if (filter === 'with_frl') {
-        query = query.not('frl', 'is', null).neq('frl', '');
-    } else if (filter === 'without_frl') {
-        query = query.or('frl.is.null,frl.eq.');
+    while (hasMore) {
+        let query = supabase
+            .from('master_list')
+            .select('*')
+            .order('id', { ascending: true })
+            .range(start, start + BATCH_SIZE - 1);
+
+        if (filter === 'with_frl') {
+            query = query.not('frl', 'is', null).neq('frl', '');
+        } else if (filter === 'without_frl') {
+            query = query.or('frl.is.null,frl.eq.');
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error getting master list:', error);
+            break;
+        }
+
+        if (!data || data.length === 0) {
+            hasMore = false;
+        } else {
+            allData = allData.concat(data);
+            if (data.length < BATCH_SIZE) {
+                hasMore = false;
+            } else {
+                start += BATCH_SIZE;
+            }
+        }
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-        console.error('Error getting master list:', error);
-        return [];
-    }
-    return data;
+    return allData;
 }
 
 export async function getMasterListMetrics() {
@@ -745,14 +785,12 @@ export async function getRemovedItemsData(currentUploadId) {
  */
 
 export async function getDataGroupedByMBL(uploadId = null) {
-    let query = uploadId
-        ? supabase.from('report_data').select('*').eq('upload_id', uploadId).range(0, 999999)
-        : supabase.from('master_list').select('*').range(0, 999999);
+    // Use the batch fetching functions to avoid row limits
+    const data = uploadId
+        ? await getReportData(uploadId, 'all')
+        : await getMasterListData('all');
 
-    const { data, error } = await query;
-
-    if (error) {
-        console.error('Error getting grouped data:', error);
+    if (!data || data.length === 0) {
         return {};
     }
 
