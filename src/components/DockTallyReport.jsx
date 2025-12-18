@@ -476,10 +476,17 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                         <tbody>
                 `;
 
+                // Calculate dynamic row height based on number of items on this page
+                // Total available space ~700px, divided evenly among items
+                // Each item needs 2 rows (data + notes), so divide by (pageItems.length * 2)
+                const totalAvailableHeight = 700;
+                const rowsNeeded = pageItems.length * 2; // 2 rows per HAWB
+                const dynamicRowHeight = Math.floor(totalAvailableHeight / rowsNeeded);
+
                 // Render only actual items (no empty rows)
                 pageItems.forEach(item => {
                     html += `
-                        <tr style="height: 35px;">
+                        <tr style="height: ${dynamicRowHeight}px;">
                             <td style="padding: 3px; border: 1px solid #000000; font-weight: bold; vertical-align: top; font-size: 9px; background-color: #FFFFFF;">
                                 ${item.hawb || ''}
                             </td>
@@ -511,7 +518,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                             <td style="border: 1px solid #000000; background-color: #FFFFFF;"></td>
                         </tr>
-                        <tr style="height: 35px;">
+                        <tr style="height: ${dynamicRowHeight}px;">
                             <td colspan="3" style="border: 1px solid #000000; padding: 2px; vertical-align: top; font-size: 7px; background-color: #FFFFFF;">
                                 <span style="color: #000000;">Dock Notes:</span>
                             </td>
