@@ -71,9 +71,38 @@ export async function deleteUpload(uploadId) {
             return false;
         }
 
+        // Step 4: Clean up orphaned master list items (items with NULL upload references)
+        await cleanupOrphanedMasterListItems();
+
         return true;
     } catch (err) {
         console.error('Error in deleteUpload:', err);
+        return false;
+    }
+}
+
+/**
+ * Remove master list items that have no upload references
+ * This happens when all uploads referencing an item have been deleted
+ */
+export async function cleanupOrphanedMasterListItems() {
+    try {
+        // Delete items where both upload references are NULL
+        // (meaning the item isn't referenced by any existing uploads)
+        const { error } = await supabase
+            .from('master_list')
+            .delete()
+            .is('first_seen_upload_id', null)
+            .is('last_updated_upload_id', null);
+
+        if (error) {
+            console.error('Error cleaning up orphaned items:', error);
+            return false;
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Error in cleanupOrphanedMasterListItems:', err);
         return false;
     }
 }

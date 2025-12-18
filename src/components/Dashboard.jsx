@@ -26,6 +26,7 @@ import {
     detectNewItems,
     detectRemovedItems,
     detectNewlyFrld,
+    cleanupOrphanedMasterListItems,
     // Air functions
     getAllAirUploads,
     deleteAirUpload,
@@ -312,6 +313,19 @@ export default function Dashboard({ onLogout }) {
         showToast('CSV downloaded successfully', 'success');
     };
 
+    const handleRefreshMasterList = async () => {
+        const success = await cleanupOrphanedMasterListItems();
+        if (success) {
+            // Reload master list data after cleanup
+            if (isMasterList) {
+                await loadMasterListData();
+            }
+            showToast('Master List synced successfully', 'success');
+        } else {
+            showToast('Failed to sync Master List', 'error');
+        }
+    };
+
     const showToast = (message, type = 'success') => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
@@ -339,6 +353,7 @@ export default function Dashboard({ onLogout }) {
                 onUploadClick={() => setShowUploadModal(true)}
                 onDeleteUpload={handleDeleteUpload}
                 onRefresh={loadUploads}
+                onRefreshMasterList={handleRefreshMasterList}
                 onLogout={onLogout}
             />
 

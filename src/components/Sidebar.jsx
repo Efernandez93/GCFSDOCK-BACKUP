@@ -23,6 +23,7 @@ export default function Sidebar({
     onUploadClick,
     onDeleteUpload,
     onRefresh,
+    onRefreshMasterList,
     onLogout
 }) {
     const [deleting, setDeleting] = useState(null);
@@ -86,7 +87,24 @@ export default function Sidebar({
                             <Package size={16} />
                             Master List
                         </div>
-                        <div className="upload-count">{masterListCount} items</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div className="upload-count">{masterListCount} items</div>
+                            <button
+                                className="btn btn-ghost btn-icon"
+                                style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    padding: '4px'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRefreshMasterList();
+                                }}
+                                title="Sync Master List (remove orphaned items)"
+                            >
+                                <RefreshCw size={14} />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
