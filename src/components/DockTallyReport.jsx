@@ -476,7 +476,9 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                         <tbody>
                 `;
 
-                pageItems.forEach(item => {
+                // Always render exactly 5 rows for uniform spacing
+                for (let i = 0; i < 5; i++) {
+                    const item = pageItems[i] || {}; // Use empty object if no item exists
                     html += `
                         <tr>
                             <td style="padding: 3px; border: 1px solid black; font-weight: bold; vertical-align: top; font-size: 9px;">
@@ -520,7 +522,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td colspan="5" style="border: 1px solid black;"></td>
                         </tr>
                     `;
-                });
+                }
 
                 html += `</tbody></table></div>`;
             });
