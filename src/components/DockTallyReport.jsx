@@ -476,11 +476,11 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                         <tbody>
                 `;
 
-                // Always render exactly 5 rows for uniform spacing
+                // Always render exactly 5 rows for uniform spacing (each HAWB = 2 rows = 10% each)
                 for (let i = 0; i < 5; i++) {
                     const item = pageItems[i] || {}; // Use empty object if no item exists
                     html += `
-                        <tr style="height: 20%;">
+                        <tr style="height: 10%;">
                             <td style="padding: 3px; border: 1px solid black; font-weight: bold; vertical-align: top; font-size: 9px;">
                                 ${item.hawb || ''}
                             </td>
@@ -512,7 +512,7 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                             <td style="border: 1px solid black;"></td>
                             <td style="border: 1px solid black;"></td>
                         </tr>
-                        <tr style="height: 20%;">
+                        <tr style="height: 10%;">
                             <td colspan="3" style="border: 1px solid black; padding: 2px; vertical-align: top; font-size: 7px;">
                                 <span style="color: #666;">Dock Notes:</span>
                             </td>
