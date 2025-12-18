@@ -84,8 +84,8 @@ CREATE TABLE master_list (
     volume TEXT,
     vbond TEXT,
     tdf TEXT,
-    first_seen_upload_id UUID REFERENCES uploads(id),
-    last_updated_upload_id UUID REFERENCES uploads(id),
+    first_seen_upload_id UUID REFERENCES uploads(id) ON DELETE SET NULL,
+    last_updated_upload_id UUID REFERENCES uploads(id) ON DELETE SET NULL,
     last_update_reason TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
