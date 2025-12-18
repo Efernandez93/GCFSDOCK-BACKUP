@@ -344,12 +344,21 @@ export async function getMasterListNewFrl() {
  */
 
 export async function detectNewItems(currentUploadId) {
-    // Get previous upload
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return 0;
+
+    // Get previous upload (by date, not ID)
     const { data: uploads } = await supabase
         .from('uploads')
         .select('id')
-        .lt('id', currentUploadId)
-        .order('id', { ascending: false })
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
         .limit(1);
 
     if (!uploads || uploads.length === 0) {
@@ -382,11 +391,21 @@ export async function detectNewItems(currentUploadId) {
 }
 
 export async function detectRemovedItems(currentUploadId) {
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return 0;
+
+    // Get previous upload (by date, not ID)
     const { data: uploads } = await supabase
         .from('uploads')
         .select('id')
-        .lt('id', currentUploadId)
-        .order('id', { ascending: false })
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
         .limit(1);
 
     if (!uploads || uploads.length === 0) return 0;
@@ -414,15 +433,25 @@ export async function detectRemovedItems(currentUploadId) {
 }
 
 export async function getNewItemsData(currentUploadId) {
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return [];
+
+    // Get previous upload (by date, not ID)
     const { data: uploads } = await supabase
         .from('uploads')
         .select('id')
-        .lt('id', currentUploadId)
-        .order('id', { ascending: false })
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
         .limit(1);
 
     if (!uploads || uploads.length === 0) {
-        return await getReportData(currentUploadId);
+        return [];
     }
 
     const prevUploadId = uploads[0].id;
@@ -445,11 +474,21 @@ export async function getNewItemsData(currentUploadId) {
 }
 
 export async function getRemovedItemsData(currentUploadId) {
+    // Get the current upload's date first
+    const { data: currentUpload } = await supabase
+        .from('uploads')
+        .select('upload_date')
+        .eq('id', currentUploadId)
+        .single();
+
+    if (!currentUpload) return [];
+
+    // Get previous upload (by date, not ID)
     const { data: uploads } = await supabase
         .from('uploads')
         .select('id')
-        .lt('id', currentUploadId)
-        .order('id', { ascending: false })
+        .lt('upload_date', currentUpload.upload_date)
+        .order('upload_date', { ascending: false })
         .limit(1);
 
     if (!uploads || uploads.length === 0) return [];
