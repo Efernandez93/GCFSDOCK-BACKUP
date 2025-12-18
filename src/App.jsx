@@ -28,9 +28,9 @@ function App() {
   }, []);
 
   const handleLogin = async (email, password) => {
-    const { user: loggedInUser, error } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
     if (error) throw error;
-    setUser(loggedInUser);
+    setUser(data?.user);
   };
 
   const handleLogout = async () => {

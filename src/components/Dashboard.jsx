@@ -258,10 +258,22 @@ export default function Dashboard({ onLogout }) {
             ? await deleteAirUpload(uploadId)
             : await deleteUpload(uploadId);
         if (success) {
+            // Reload uploads list
             await loadUploads();
+
+            // If we were viewing the deleted upload, switch to master list
             if (selectedUpload === uploadId) {
-                handleSelectMasterList();
+                setSelectedUpload(null);
+                setIsMasterList(true);
             }
+
+            // Force reload the current view
+            if (isMasterList) {
+                await loadMasterListData();
+            } else if (selectedUpload && selectedUpload !== uploadId) {
+                await loadSelectedUploadData();
+            }
+
             showToast('Upload deleted successfully', 'success');
         } else {
             showToast('Failed to delete upload', 'error');

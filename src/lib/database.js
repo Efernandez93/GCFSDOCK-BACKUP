@@ -499,15 +499,9 @@ export async function getDataGroupedByMBL(uploadId = null) {
 
 function normalizeHB(value) {
     if (value === null || value === undefined || value === '') return '';
-    try {
-        const num = parseFloat(value);
-        if (!isNaN(num)) {
-            return String(Math.floor(num));
-        }
-        return String(value).trim();
-    } catch {
-        return String(value).trim();
-    }
+    // Always preserve the original value as string (including letters and numbers)
+    // Just trim whitespace
+    return String(value).trim().toUpperCase();
 }
 
 function hasValueChanged(oldVal, newVal) {
