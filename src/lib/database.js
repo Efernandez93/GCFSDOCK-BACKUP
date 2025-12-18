@@ -40,10 +40,19 @@ export async function getAllUploads() {
 }
 
 export async function deleteUpload(uploadId) {
-    // Delete report data first
+    // Step 1: Delete from master_list items that were first seen in this upload
+    await supabase
+        .from('master_list')
+        .delete()
+        .eq('first_seen_upload_id', uploadId);
+
+    // Step 2: Delete from master_list items that were last updated in this upload
+    // (only if they were also first seen in this upload, already handled above)
+
+    // Step 3: Delete report data
     await supabase.from('report_data').delete().eq('upload_id', uploadId);
 
-    // Delete the upload record
+    // Step 4: Delete the upload record
     const { error } = await supabase.from('uploads').delete().eq('id', uploadId);
 
     if (error) {
@@ -328,12 +337,8 @@ export async function detectNewItems(currentUploadId) {
         .limit(1);
 
     if (!uploads || uploads.length === 0) {
-        // No previous upload, all items are new
-        const { count } = await supabase
-            .from('report_data')
-            .select('*', { count: 'exact', head: true })
-            .eq('upload_id', currentUploadId);
-        return count || 0;
+        // No previous upload, nothing to compare to
+        return 0;
     }
 
     const prevUploadId = uploads[0].id;
