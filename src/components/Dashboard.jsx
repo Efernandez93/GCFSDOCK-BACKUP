@@ -66,20 +66,45 @@ export default function Dashboard({ onLogout }) {
 
     // Load uploads on mount and when mode changes
     useEffect(() => {
-        loadUploads();
-        // Reset selection when mode changes
-        setSelectedUpload(null);
-        setIsMasterList(true);
-        setActiveFilter('all');
-        setSearchText('');
+        const initializeMode = async () => {
+            await loadUploads();
+            // Reset selection when mode changes
+            if (mode === 'air') {
+                // Air mode: select first upload if available
+                const uploadList = await getAllAirUploads();
+                if (uploadList.length > 0) {
+                    setSelectedUpload(uploadList[0].id);
+                    setIsMasterList(false);
+                } else {
+                    setSelectedUpload(null);
+                    setIsMasterList(false); // No master list in air mode
+                }
+            } else {
+                // Ocean mode: default to master list
+                setSelectedUpload(null);
+                setIsMasterList(true);
+            }
+            setActiveFilter('all');
+            setSearchText('');
+        };
+
+        initializeMode();
     }, [mode]);
 
     // Load data when selection changes
     useEffect(() => {
-        if (isMasterList) {
-            loadMasterListData();
-        } else if (selectedUpload) {
-            loadUploadData(selectedUpload);
+        if (mode === 'air') {
+            // Air mode: only load upload data (no master list)
+            if (selectedUpload) {
+                loadUploadData(selectedUpload);
+            }
+        } else {
+            // Ocean mode: load master list or upload data
+            if (isMasterList) {
+                loadMasterListData();
+            } else if (selectedUpload) {
+                loadUploadData(selectedUpload);
+            }
         }
     }, [isMasterList, selectedUpload, activeFilter, mode]);
 

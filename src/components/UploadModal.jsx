@@ -7,7 +7,7 @@ import { Upload, X, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { parseCSV, validateColumns, cleanData, cleanAirData } from '../lib/csvUtils';
 import {
     saveUpload, saveReportData, updateMasterList,
-    saveAirUpload, saveAirReportData, updateAirMasterList
+    saveAirUpload, saveAirReportData
 } from '../lib/database';
 
 export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean' }) {
@@ -103,11 +103,16 @@ export default function UploadModal({ isOpen, onClose, onSuccess, mode = 'ocean'
                 throw new Error('Failed to save report data');
             }
 
-            // Step 6: Update master list (mode-aware)
-            setProgress({ step: 'Updating master list...', detail: '' });
-            const { itemsAdded, itemsUpdated } = mode === 'air'
-                ? await updateAirMasterList(upload.id, cleanedData)
-                : await updateMasterList(upload.id, cleanedData);
+            // Step 6: Update master list (Ocean mode only)
+            let itemsAdded = 0;
+            let itemsUpdated = 0;
+
+            if (mode === 'ocean') {
+                setProgress({ step: 'Updating master list...', detail: '' });
+                const result = await updateMasterList(upload.id, cleanedData);
+                itemsAdded = result.itemsAdded;
+                itemsUpdated = result.itemsUpdated;
+            }
 
             setProgress({
                 step: 'Complete!',

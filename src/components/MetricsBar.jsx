@@ -24,7 +24,7 @@ export default function MetricsBar({
             isInfo: true,  // Just for display, no filtering
             enabled: false  // Disable clicking - it's informational only
         },
-        // Only show FRL metrics for Ocean mode
+        // Show FRL metrics for Ocean mode, LOG metrics for Air mode
         ...(!isAir ? [
             {
                 key: 'with_frl',
@@ -36,7 +36,18 @@ export default function MetricsBar({
                 label: 'Without FRL',
                 value: metrics.withoutFrl ?? 0
             },
-        ] : []),
+        ] : [
+            {
+                key: 'with_log',
+                label: 'With LOG',
+                value: metrics.withFrl ?? 0  // Using withFrl field for LOG data
+            },
+            {
+                key: 'without_log',
+                label: 'Without LOG',
+                value: metrics.withoutFrl ?? 0  // Using withoutFrl field for LOG data
+            },
+        ]),
         // Only show comparison metrics for individual uploads (not Master List)
         ...(!isMasterList ? [
             {
