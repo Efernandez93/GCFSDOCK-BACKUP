@@ -411,10 +411,15 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
             }
 
             pages.forEach((pageItems, pageIdx) => {
-                const isPageBreak = (mawbIdx > 0 && pageIdx === 0) || pageIdx > 0;
+                // Each new MAWB should always start on a new page (except the very first one)
+                const isNewMawb = mawbIdx > 0 && pageIdx === 0;
+                // Additional pages within the same MAWB also need page breaks
+                const isPageBreak = isNewMawb || pageIdx > 0;
                 const pageNum = pageIdx + 1;
 
-                html += `<div class="${isPageBreak ? 'page-break' : ''}" style="page-break-inside: avoid; color: #000000; font-family: Arial, sans-serif; font-size: 10px; background-color: #FFFFFF; padding: 5px;">`;
+                // Use explicit page-break-before style to ensure each MAWB starts on a new page
+                const pageBreakStyle = isPageBreak ? 'page-break-before: always;' : '';
+                html += `<div class="${isPageBreak ? 'page-break' : ''}" style="${pageBreakStyle} page-break-inside: avoid; color: #000000; font-family: Arial, sans-serif; font-size: 10px; background-color: #FFFFFF; padding: 5px;">`;
 
                 // Header - Only on first page of MAWB
                 if (pageIdx === 0) {
