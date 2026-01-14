@@ -417,9 +417,11 @@ export default function DockTallyReport({ isOpen, onClose, data = [], activeFilt
                 const isPageBreak = isNewMawb || pageIdx > 0;
                 const pageNum = pageIdx + 1;
 
-                // Use explicit page-break-before style to ensure each MAWB starts on a new page
-                const pageBreakStyle = isPageBreak ? 'page-break-before: always;' : '';
-                html += `<div class="${isPageBreak ? 'page-break' : ''}" style="${pageBreakStyle} page-break-inside: avoid; color: #000000; font-family: Arial, sans-serif; font-size: 10px; background-color: #FFFFFF; padding: 5px;">`;
+                // Add a separate page-break div BEFORE the content for reliable page breaks with html2pdf
+                if (isPageBreak) {
+                    html += `<div class="page-break" style="page-break-before: always; break-before: page; height: 0; margin: 0; padding: 0;"></div>`;
+                }
+                html += `<div style="page-break-inside: avoid; color: #000000; font-family: Arial, sans-serif; font-size: 10px; background-color: #FFFFFF; padding: 5px;">`;
 
                 // Header - Only on first page of MAWB
                 if (pageIdx === 0) {
