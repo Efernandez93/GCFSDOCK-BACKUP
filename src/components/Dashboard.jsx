@@ -3,7 +3,8 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { Download, FileText, X, Anchor, Plane } from 'lucide-react';
+import { Download, FileText, X, Anchor, Plane, ClipboardList } from 'lucide-react';
+import OceanManualEntry from './OceanManualEntry';
 import Sidebar from './Sidebar';
 import MetricsBar from './MetricsBar';
 import DataTable from './DataTable';
@@ -429,8 +430,64 @@ export default function Dashboard({ onLogout }) {
                         <Plane size={20} />
                         Air
                     </button>
+                    <button
+                        onClick={() => setMode('ocean-manual')}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '12px 24px',
+                            border: 'none',
+                            borderBottom: mode === 'ocean-manual' ? '3px solid var(--info)' : '3px solid transparent',
+                            background: mode === 'ocean-manual' ? 'var(--info-bg)' : 'transparent',
+                            color: mode === 'ocean-manual' ? 'var(--info)' : 'var(--text-secondary)',
+                            fontWeight: mode === 'ocean-manual' ? '600' : '400',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontSize: '0.95rem'
+                        }}
+                    >
+                        <ClipboardList size={20} />
+                        Ocean Manual
+                    </button>
+                    <button
+                        onClick={() => setMode('air-manual')}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '12px 24px',
+                            border: 'none',
+                            borderBottom: mode === 'air-manual' ? '3px solid var(--info)' : '3px solid transparent',
+                            background: mode === 'air-manual' ? 'var(--info-bg)' : 'transparent',
+                            color: mode === 'air-manual' ? 'var(--info)' : 'var(--text-secondary)',
+                            fontWeight: mode === 'air-manual' ? '600' : '400',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontSize: '0.95rem'
+                        }}
+                    >
+                        <ClipboardList size={20} />
+                        Air Manual
+                    </button>
                 </div>
 
+{/* Manual Entry Modes */}
+                {mode === 'ocean-manual' && (
+                    <OceanManualEntry />
+                )}
+
+                {mode === 'air-manual' && (
+                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        <ClipboardList size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                        <h2>Air Manual Entry</h2>
+                        <p>Coming soon...</p>
+                    </div>
+                )}
+
+                {/* Regular Ocean/Air Modes */}
+                {(mode === 'ocean' || mode === 'air') && (
+                    <>
                 <header className="content-header">
                     <div>
                         <h1 style={{ fontSize: '1.25rem', marginBottom: '4px' }}>
@@ -495,6 +552,8 @@ export default function Dashboard({ onLogout }) {
 
                     <DataTable data={filteredData} loading={loading} mode={mode} />
                 </div>
+                    </>
+                )}
             </main>
 
             {/* Modals */}
